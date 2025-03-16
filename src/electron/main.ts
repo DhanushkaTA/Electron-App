@@ -1,8 +1,8 @@
-import {app, BrowserWindow, ipcMain} from "electron"
+import {app, BrowserWindow, ipcMain, Tray} from "electron"
 import path from 'path'
 import { ipcMainHandle, isDev } from "./util.js";
 import { getStaticData, pollResource } from "./resourceManager.js";
-import { getPreloadPath, getUiPath } from "./pathResolver.js";
+import { getAssetPath, getPreloadPath, getUiPath } from "./pathResolver.js";
 
 type test = string;
 
@@ -25,4 +25,32 @@ app.on('ready', () => {
         return getStaticData()
     })
 
+    new Tray(path.join(getAssetPath(), "trayIcon.png"))
+
+   handleCloseEvents(mainWindow);
+
 })
+
+function handleCloseEvents(mainWindow: BrowserWindow){
+    let willClose = false;
+
+    mainWindow.on('close', (e)=> {
+        if(willClose){
+            return;
+        }
+        e.preventDefault();
+        mainWindow.hide();
+        //for apple
+        if(app.dock){
+            app.dock.hide();
+        }
+    });
+
+    app.on('before-quit',() => {
+        willClose = true;
+    })
+
+    mainWindow.on('show',() => {
+        willClose = false;
+    })
+}
