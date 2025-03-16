@@ -14,9 +14,12 @@ type EventPayloadMapping = {
     statistics: Statistics;
     getStaticData: StaticData;
     changeView: View;
+    sendFrameAction: FrameWindowAction;
 }
 
 type View = "CPU" | "RAM" | "STORAGE";
+
+type FrameWindowAction = 'CLOSE' | 'MAXIMIZE' | 'MINIMIZE';
 
 type UnsubscribeFunction = () => void;
 
@@ -25,5 +28,6 @@ interface Window {
         subscribeStatistics: (callback: (statistics: Statistics) => void) => UnsubscribeFunction;
         getStaticData: () => Promise<StaticData>;
         subscribeChangeView: (callback: (view: View) => void) => UnsubscribeFunction;
+        sendFrameAction: (payload: FrameWindowAction) => void;
     }
 }

@@ -1,6 +1,6 @@
 import {app, BrowserWindow, ipcMain, Menu, Tray} from "electron"
 import path from 'path'
-import { ipcMainHandle, isDev } from "./util.js";
+import { ipcMainHandle, ipcMainOn, isDev } from "./util.js";
 import { getStaticData, pollResource } from "./resourceManager.js";
 import { getAssetPath, getPreloadPath, getUiPath } from "./pathResolver.js";
 import { createTray } from "./tray.js";
@@ -12,7 +12,8 @@ app.on('ready', () => {
     const mainWindow = new BrowserWindow({
         webPreferences:{
             preload: getPreloadPath(), 
-        }
+        },
+        frame: false
     });
     if(isDev()){
         mainWindow.loadURL('http://localhost:5123/')
@@ -26,6 +27,21 @@ app.on('ready', () => {
     ipcMainHandle("getStaticData", () => {
         return getStaticData()
     })
+
+    ipcMainOn('sendFrameAction', (payload) => {
+        switch (payload) {
+          case 'CLOSE':
+            mainWindow.close();
+            break;
+          case 'MAXIMIZE':
+            mainWindow.maximize();
+            break;
+          case 'MINIMIZE':
+            mainWindow.minimize();
+            break;
+        }
+      });
+    
 
     createTray(mainWindow)
     createMenu(mainWindow)
