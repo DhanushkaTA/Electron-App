@@ -3,6 +3,7 @@ import path from 'path'
 import { ipcMainHandle, isDev } from "./util.js";
 import { getStaticData, pollResource } from "./resourceManager.js";
 import { getAssetPath, getPreloadPath, getUiPath } from "./pathResolver.js";
+import { createTray } from "./tray.js";
 
 type test = string;
 
@@ -25,7 +26,7 @@ app.on('ready', () => {
         return getStaticData()
     })
 
-    new Tray(path.join(getAssetPath(), "trayIcon.png"))
+    createTray(mainWindow)
 
    handleCloseEvents(mainWindow);
 
